@@ -10,11 +10,12 @@
 Additional documentation can be found at the [Marlin Home Page](https://marlinfw.org/).
 Please test this firmware and let us know if it misbehaves in any way. Volunteers are standing by!
 
-## Marlin 2.0 Delta
+# Last release of Marlin 2.0 for Delta FLSun QQ-S Pro (motherboard HISPEED).
+ Updated Marlin 2.0.5.4 for FLSun QQ-S.
 
-Marlin 2.0 takes this popular RepRap firmware to the next level by adding support for much faster 32-bit and ARM-based boards while improving support for 8-bit AVR boards. Read about Marlin's decision to use a "Hardware Abstraction Layer" below.
+## I am not responsible for any Damage done do your Printer by using this. Using anything else than stock firmware requieres quite some knowlege.
 
-Download earlier versions of Marlin on the [Releases page](https://github.com/MarlinFirmware/Marlin/releases).
+## This is my experimental Marlin firmware on Delta FLSun QQ-S 
 
 ## Building Marlin 2.0
 
