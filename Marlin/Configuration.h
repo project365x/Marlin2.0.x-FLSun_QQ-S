@@ -68,8 +68,15 @@
 // config/examples/SCARA and customize for your machine.
 //
 
-// @section info
+#define QQS
+//#define QQS_TMC
+//#define QQS_UART                 
 
+#define AUTO_BED_LEVELING_BILINEAR
+//#define AUTO_BED_LEVELING_UBL
+//#define LIN_ADVANCE
+
+// @section info
 // Author info of this build printed to the host during boot and M115
 #define STRING_CONFIG_H_AUTHOR "(AndersSahlman, QQ-S config)" // Who made the changes.
 //#define CUSTOM_VERSION_FILE Version.h // Path from the root directory (no quotes)
@@ -104,14 +111,18 @@
  *
  * :[-1, 0, 1, 2, 3, 4, 5, 6, 7]
  */
+#ifdef QQS_UART
 #define SERIAL_PORT 3
 
 /**
  * Select a secondary serial port on the board to use for communication with the host.
  * :[-1, 0, 1, 2, 3, 4, 5, 6, 7]
  */
-#define SERIAL_PORT_2 1
-
+#define SERIAL_PORT_2 -1
+#else
+  #define SERIAL_PORT 3
+  #define SERIAL_PORT_2 1
+#endif      
 /**
  * This setting determines the communication speed of the printer.
  *
@@ -128,11 +139,19 @@
 
 // Choose the name from boards.h that matches your setup
 #ifndef MOTHERBOARD
-  #define MOTHERBOARD BOARD_MKS_ROBIN_MINI
+#define MOTHERBOARD BOARD_FLSUN_HISPEED
 #endif
 
 // Name displayed in the LCD "Ready" message and Info menu
+#ifdef QQS
+#define CUSTOM_MACHINE_NAME "FLSUN QQ-S"
+#endif
+#ifdef QQS_TMC
 #define CUSTOM_MACHINE_NAME "FLSUN QQ-S TMC"
+#endif                   
+#ifdef QQS_UART
+#define CUSTOM_MACHINE_NAME "FLSUN QQ-S UART"
+#endif        
 
 // Printer's unique ID, used by some programs to differentiate between machines.
 // Choose your own or use a service like https://www.uuidgenerator.net/version4
@@ -504,16 +523,18 @@
   //#define DEFAULT_Ki 2.25
   //#define DEFAULT_Kd 440
 
+#if ENABLED (QQS)
   // FLSUN QQ-S, 200 C with 100% part cooling
   #define DEFAULT_Kp 28.16
   #define DEFAULT_Ki 3.38
   #define DEFAULT_Kd 58.69
-
-  // FLSUN QQ-S, 200 C with 100% part cooling
-  //#define DEFAULT_Kp 15.94
-  //#define DEFAULT_Ki 1.11
-  //#define DEFAULT_Kd 57.38
-
+#endif
+#if EITHER(QQS_TMC, QQS_UART)
+  // FLSUN QQ-S, From Martin Carlsson
+  #define DEFAULT_Kp 26.07
+  #define DEFAULT_Ki 2.15
+  #define DEFAULT_Kd 78.90
+#endif
 #endif // PIDTEMP
 
 //===========================================================================
@@ -565,11 +586,6 @@
   #define DEFAULT_bedKp 325.10
   #define DEFAULT_bedKi 63.35
   #define DEFAULT_bedKd 417.10
-
-  // FLSUN QQ-S stock 1.6mm aluminium heater with 4mm lattice glass
-  //#define DEFAULT_bedKp 94.07
-  //#define DEFAULT_bedKi 18.78
-  //#define DEFAULT_bedKd 314.21
 
   // FIND YOUR OWN: "M303 E-1 C8 S90" to run autotune on the bed at 90 degreesC for 8 cycles.
 #endif // PIDTEMPBED
@@ -765,15 +781,25 @@
  *          TMC5130, TMC5130_STANDALONE, TMC5160, TMC5160_STANDALONE
  * :['A4988', 'A5984', 'DRV8825', 'LV8729', 'L6470', 'L6474', 'POWERSTEP01', 'TB6560', 'TB6600', 'TMC2100', 'TMC2130', 'TMC2130_STANDALONE', 'TMC2160', 'TMC2160_STANDALONE', 'TMC2208', 'TMC2208_STANDALONE', 'TMC2209', 'TMC2209_STANDALONE', 'TMC26X', 'TMC26X_STANDALONE', 'TMC2660', 'TMC2660_STANDALONE', 'TMC5130', 'TMC5130_STANDALONE', 'TMC5160', 'TMC5160_STANDALONE']
  */
-#define X_DRIVER_TYPE  TMC2208
-#define Y_DRIVER_TYPE  TMC2208
-#define Z_DRIVER_TYPE  TMC2208
+  #ifdef QQS
+    #define DRIVER_USED A4988
+  #endif
+  #ifdef QQS_TMC
+    #define DRIVER_USED TMC2208_STANDALONE
+  #endif
+  #ifdef QQS_UART
+    #define DRIVER_USED TMC2208
+  #endif
+
+#define X_DRIVER_TYPE DRIVER_USED
+#define Y_DRIVER_TYPE DRIVER_USED
+#define Z_DRIVER_TYPE DRIVER_USED
 //#define X2_DRIVER_TYPE A4988
 //#define Y2_DRIVER_TYPE A4988
 //#define Z2_DRIVER_TYPE A4988
 //#define Z3_DRIVER_TYPE A4988
 //#define Z4_DRIVER_TYPE A4988
-#define E0_DRIVER_TYPE TMC2208
+#define E0_DRIVER_TYPE DRIVER_USED
 //#define E1_DRIVER_TYPE A4988
 //#define E2_DRIVER_TYPE A4988
 //#define E3_DRIVER_TYPE A4988
@@ -1177,7 +1203,7 @@
 #if ENABLED(PROBING_HEATERS_OFF)
   //#define WAIT_FOR_BED_HEATER     // Wait for bed to heat back up between probes (to improve accuracy)
 #endif
-//#define PROBING_FANS_OFF          // Turn fans off when probing
+#define PROBING_FANS_OFF          // Turn fans off when probing
 //#define PROBING_STEPPERS_OFF      // Turn steppers off (unless needed to hold position) when probing
 #define DELAY_BEFORE_PROBING 200  // (ms) To prevent vibrations from triggering piezo sensors
 
@@ -1205,14 +1231,25 @@
 // @section machine
 
 // Invert the stepper direction. Change (or reverse the motor connector) if an axis goes the wrong way.
-#define INVERT_X_DIR true //TMC false
-#define INVERT_Y_DIR true //TMC false
-#define INVERT_Z_DIR true //TMC false
-
+#if ENABLED(QQS)
+  #define INVERT_X_DIR false
+  #define INVERT_Y_DIR false
+  #define INVERT_Z_DIR false
+#endif
+#if EITHER(QQS_TMC, QQS_UART)
+#define INVERT_X_DIR true 
+#define INVERT_Y_DIR true 
+#define INVERT_Z_DIR true 
+#endif 
 // @section extruder
 
 // For direct drive extruder v9 set to true, for geared extruder set to false.
+#if ENABLED(QQS)
 #define INVERT_E0_DIR true
+#endif
+#if EITHER(QQS_TMC, QQS_UART)
+#define INVERT_E0_DIR false
+#endif
 #define INVERT_E1_DIR false
 #define INVERT_E2_DIR false
 #define INVERT_E3_DIR false
@@ -1352,7 +1389,7 @@
  */
 //#define AUTO_BED_LEVELING_3POINT
 //#define AUTO_BED_LEVELING_LINEAR
-#define AUTO_BED_LEVELING_BILINEAR
+//#define AUTO_BED_LEVELING_BILINEAR
 //#define AUTO_BED_LEVELING_UBL //TMC
 //#define MESH_BED_LEVELING
 
@@ -1594,7 +1631,7 @@
 #define EEPROM_CHITCHAT       // Give feedback on EEPROM commands. Disable to save PROGMEM.
 #define EEPROM_BOOT_SILENT    // Keep M503 quiet and only give errors during first load
 #if ENABLED(EEPROM_SETTINGS)
-  //#define EEPROM_AUTO_INIT  // Init EEPROM automatically on any errors.
+  #define EEPROM_AUTO_INIT  // Init EEPROM automatically on any errors.
 #endif
 
 //
@@ -1603,7 +1640,7 @@
 // When enabled Marlin will send a busy status message to the host
 // every couple of seconds when it can't accept commands.
 //
-//#define HOST_KEEPALIVE_FEATURE        // Disable this if your host doesn't like keepalive messages
+#define HOST_KEEPALIVE_FEATURE        // Disable this if your host doesn't like keepalive messages
 //#define DEFAULT_KEEPALIVE_INTERVAL 2  // Number of seconds between "busy" messages. Set with M113.
 //#define BUSY_WHILE_HEATING            // Some hosts require "busy" messages even during heating
 
@@ -1752,7 +1789,7 @@
  *
  * View the current statistics with M78.
  */
-//#define PRINTCOUNTER
+#define PRINTCOUNTER
 
 //=============================================================================
 //============================= LCD and SD support ============================
@@ -1811,7 +1848,7 @@
  *
  */
 #define SDSUPPORT
-//#define SDIO_SUPPORT
+//#define SDIO_SUPPORT  ///define in pins definitions
 
 /**
  * SD CARD: SPI SPEED
@@ -2268,7 +2305,6 @@
 // Upscaled 128x64 Marlin UI
 //
 #define FSMC_GRAPHICAL_TFT
-
 //
 // TFT LVGL UI
 //
@@ -2278,8 +2314,8 @@
 //
 //#define TFT_LVGL_UI_FSMC  // Robin nano v1.2 uses FSMC
 //#define TFT_LVGL_UI_SPI   // Robin nano v2.0 uses SPI
+#define TFT_LITTLE_VGL_UI// Robin mini v2 use FSMC
 
-//
 // Anycubic Mega TFT (AI3M)
 //
 //#define ANYCUBIC_TFT_MODEL
@@ -2307,7 +2343,7 @@
   #define XPT2046_X_OFFSET       -43
   #define XPT2046_Y_OFFSET        257
 #endif
-#define TFT_LITTLE_VGL_UI
+
 //
 // RepRapWorld REPRAPWORLD_KEYPAD v1.1
 // https://reprapworld.com/?products_details&products_id=202&cPath=1591_1626
@@ -2443,7 +2479,7 @@
 // (ms) Delay  before the next move will start, to give the servo time to reach its target angle.
 // 300ms is a good value but you can try less delay.
 // If the servo can't reach the requested position, increase it.
-#define SERVO_DELAY { 300 }
+//#define SERVO_DELAY { 300 }
 
 // Only power servos during movement, otherwise leave off to prevent jitter
 //#define DEACTIVATE_SERVOS_AFTER_MOVE
