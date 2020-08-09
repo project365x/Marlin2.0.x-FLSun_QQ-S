@@ -55,10 +55,10 @@
 //
 // Limit Switches
 //
-//#define X_DIAG_PIN                          PA15  //-X
-//#define Y_DIAG_PIN                          PA12  //-Y
-//#define Z_DIAG_PIN                          PA11  //-Z
-//#define E0_DIAG_PIN                         PC4   //+Z
+#define X_DIAG_PIN                          PA15  //-X
+#define Y_DIAG_PIN                          PA12  //-Y
+#define Z_DIAG_PIN                          PA11  //-Z
+#define E0_DIAG_PIN                         PC4   //+Z
 
 #define X_STOP_PIN                          PA15  //-X
 #define Y_STOP_PIN                          PA12  //-Y
@@ -71,30 +71,30 @@
 #define X_ENABLE_PIN                        PE4 //X_EN
 #define X_STEP_PIN                          PE3 //X_STEP
 #define X_DIR_PIN                           PE2 //X_DIR
-//#ifndef X_CS_PIN
-//  #define X_CS_PIN                          PD5 //FSMC_NWE
-//#endif
+#ifndef X_CS_PIN
+  #define X_CS_PIN                          PA10 //FSMC_NWE
+#endif
 
 #define Y_ENABLE_PIN                        PE1 //Y_EN
 #define Y_STEP_PIN                          PE0 //Y_STEP
 #define Y_DIR_PIN                           PB9 //Y_DIR
-//#ifndef Y_CS_PIN
-//  #define Y_CS_PIN                          PD7 //FSMC_NE4
-//#endif
+#ifndef Y_CS_PIN
+  #define Y_CS_PIN                          PA9 //FSMC_NE4
+#endif
 
 #define Z_ENABLE_PIN                        PB8 //Z_EN
 #define Z_STEP_PIN                          PB5 //Z_STEP
 #define Z_DIR_PIN                           PB4 //Z_DIR
-//#ifndef Z_CS_PIN
-//  #define Z_CS_PIN                          PD4 //FSMC_NOE
-//#endif
+#ifndef Z_CS_PIN
+  #define Z_CS_PIN                          PA8 //FSMC_NOE
+#endif
 
 #define E0_ENABLE_PIN                       PB3 //E0_EN
 #define E0_STEP_PIN                         PD6 //E0_STEP
 #define E0_DIR_PIN                          PD3 //E0_DIR
-//#ifndef E0_CS_PIN
-//  #define E0_CS_PIN                         PD9 //FSMC_D14
-//#endif
+#ifndef E0_CS_PIN
+  #define E0_CS_PIN                         PC7 //FSMC_D14
+#endif
 
 // Motor current PWM pins in orig //
 //#define MOTOR_CURRENT_PWM_XY_PIN            PA6 //Vref Control XY
@@ -112,22 +112,6 @@
 #define VREF_XY_PIN                       PA6 //Vref Control XY
 #define VREF_Z_PIN                        PA7 //Vref Control Z
 #define VREF_E1_PIN                       PB0 //Vref Control E
-
-//
-//
-// Software SPI pins for TMC2130 stepper drivers
-//
-//#if ENABLED(TMC_USE_SW_SPI)
-//  #ifndef TMC_SW_MOSI
-//    #define TMC_SW_MOSI                     PB15  //SPI2_MOSI
-//  #endif
-//  #ifndef TMC_SW_MISO
-//    #define TMC_SW_MISO                     PB14  //SPI2_MISO
-//  #endif
-//  #ifndef TMC_SW_SCK
-//    #define TMC_SW_SCK                      PB13  //SPI2_SCK
-//  #endif
-//#endif
 
 #if HAS_TMC_UART
   /**
@@ -191,14 +175,14 @@
 //
 // Misc. Functions
 //
-#define POWER_LOSS_PIN                      PA2   // PW_DET
+#define POWER_LOSS_PIN                      PA1   // PW_DET
 #define PS_ON_PIN                           PA3   // PW_OFF
 
 //#define LED_PIN                           PB2
 
-//#define WIFI_IO0_PIN                        PC13
-//#define WIFI_IO1_PIN       			            PC7
-//#define WIFI_RESET_PIN			              	PA5
+#define WIFI_IO0_PIN                        PA8
+#define WIFI_IO1_PIN       			            PC7
+#define WIFI_RESET_PIN			              	PA5
 
 #define MT_DET_1_PIN                        PA4 //MT_DET
 #define MT_DET_2_PIN                        PE6 //FALA_CTRL /EXT_IRQ
@@ -216,7 +200,7 @@
 #endif
 
 #define SDIO_SUPPORT
-//#define SDIO_CLOCK 4500000                        // 4.5 MHz
+#define SDIO_CLOCK 4500000                        // 4.5 MHz
 #define SD_DETECT_PIN                       PD12  //SD_CD
 #define ONBOARD_SD_CS_PIN                   PC11  //SD_CS
 #define SD_MOSI                             PD2   //SD_MOSI
@@ -239,10 +223,10 @@
 
   #define LCD_BACKLIGHT_PIN                 PD13  //FSMC_LIGHT
 
-  #define TOUCH_CS_PIN                      PE14  // SPI1_NSS
-  #define TOUCH_SCK_PIN                     PA5   // SPI1_SCK
-  #define TOUCH_MISO_PIN                    PA6   // SPI1_MISO
-  #define TOUCH_MOSI_PIN                    PA7   // SPI1_MOSI
+  #define TOUCH_CS_PIN                      PC2   // SPI1_NSS
+  #define TOUCH_SCK_PIN                     PB13  // SPI1_SCK
+  #define TOUCH_MISO_PIN                    PB14  // SPI1_MISO
+  #define TOUCH_MOSI_PIN                    PB15  // SPI1_MOSI
 
   #define BTN_EN1                           PE8   //FSMC_D5
   #define BTN_EN2                           PE11  //FSMC_D8
