@@ -289,13 +289,13 @@
       #define FSMC_UPSCALE                     3
     #endif
     #ifndef LCD_FULL_PIXEL_WIDTH
-      #define LCD_FULL_PIXEL_WIDTH           480
+      #define LCD_FULL_PIXEL_WIDTH           320
     #endif
     #ifndef LCD_PIXEL_OFFSET_X
       #define LCD_PIXEL_OFFSET_X              48
     #endif
     #ifndef LCD_FULL_PIXEL_HEIGHT
-      #define LCD_FULL_PIXEL_HEIGHT          320
+      #define LCD_FULL_PIXEL_HEIGHT          240
     #endif
     #ifndef LCD_PIXEL_OFFSET_Y
       #define LCD_PIXEL_OFFSET_Y              32
@@ -308,43 +308,6 @@
     #define LCD_PINS_ENABLE                 PD13
     #define LCD_PINS_RS                     PC6   //FSMC_RST
 
-  #elif ENABLED(MKS_MINI_12864)
-
-    // MKS MINI12864 and MKS LCD12864B
-    // If using MKS LCD12864A (Need to remove RPK2 resistor)
-
-    #define LCD_BACKLIGHT_PIN               -1
-    #define LCD_RESET_PIN                   -1
-    #define DOGLCD_A0                       PD11
-    #define DOGLCD_CS                       PE15
-    #define DOGLCD_SCK                      PA5
-    #define DOGLCD_MOSI                     PA7
-
-    // Required for MKS_MINI_12864 with this board
-    #define MKS_LCD12864B
-    #undef SHOW_BOOTSCREEN
-
-  #else                                           // !MKS_MINI_12864
-
-    #define LCD_PINS_D4                     PE14
-    #if ENABLED(ULTIPANEL)
-      #define LCD_PINS_D5                   PE15
-      #define LCD_PINS_D6                   PD11
-      #define LCD_PINS_D7                   PD10
-    #endif
-
-    #ifndef BOARD_ST7920_DELAY_1
-      #define BOARD_ST7920_DELAY_1 DELAY_NS(125)
-    #endif
-    #ifndef BOARD_ST7920_DELAY_2
-      #define BOARD_ST7920_DELAY_2 DELAY_NS(125)
-    #endif
-    #ifndef BOARD_ST7920_DELAY_3
-      #define BOARD_ST7920_DELAY_3 DELAY_NS(125)
-    #endif
-
-  #endif // !MKS_MINI_12864
-
 #endif // HAS_SPI_LCD
 
 #define SPI_FLASH
@@ -355,19 +318,3 @@
   #define W25QXX_SCK_PIN                    PB13
 #endif
 
-// Motor current PWM pins
-//#define MOTOR_CURRENT_PWM_XY_PIN            PA6
-//#define MOTOR_CURRENT_PWM_Z_PIN             PA7
-//#define MOTOR_CURRENT_PWM_E_PIN             PB0
-//#define MOTOR_CURRENT_PWM_RANGE 1500              // (255 * (1000mA / 65535)) * 257 = 1000 is equal 1.6v Vref in turn equal 1Amp
-//#define DEFAULT_PWM_MOTOR_CURRENT  { 1030, 1030, 1030 } // 1.05Amp per driver, here is XY, Z and E. This values determined empirically.
-
-// This is a kind of workaround in case native marlin "digipot" interface won't work.
-// Required to enable related code in STM32F1/HAL.cpp
-//#ifndef MKS_ROBIN_MINI_VREF_PWM
-//  #define MKS_ROBIN_MINI_VREF_PWM
-//#endif
-
-//#define VREF_XY_PIN                       PA6
-//#define VREF_Z_PIN                        PA7
-//#define VREF_E1_PIN                       PB0
