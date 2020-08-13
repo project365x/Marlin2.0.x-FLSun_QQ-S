@@ -21,26 +21,28 @@
  */
 #pragma once
 
-/**
+/** 
  * FLSUN HiSpeed V1 (STM32F130VET6) board pin assignments
  */
 
 #ifndef __STM32F1__
   #error "Oops! Select an STM32F1 board in 'Tools > Board.'"
 #elif HOTENDS > 1 || E_STEPPERS > 1
-  #error "FLSUN hispeed supports up to 1 hotends / E-steppers. Comment out this line to continue."
+  #error "FLSUN hispeed supports 1 hotends / E-steppers. Comment out this line to continue."
 #endif
 
 #define BOARD_INFO_NAME "FLSUN HISPEED"
 
 //
-// Release PB4 (Y_ENABLE_PIN) from JTAG NRST role
+//
 //
 #define DISABLE_DEBUG
 
+//
+// EEPROM
+//
 #if EITHER(NO_EEPROM_SELECTED, FLASH_EEPROM_EMULATION)
   #define FLASH_EEPROM_EMULATION
-  // 2K in a AT24C16N
   #define EEPROM_PAGE_SIZE     (0x800U)           // 2KB
   #define EEPROM_START_ADDRESS (0x8000000UL + (STM32_FLASH_SIZE) * 1024UL - (EEPROM_PAGE_SIZE) * 2UL)
   #define MARLIN_EEPROM_SIZE    EEPROM_PAGE_SIZE  // 2KB
@@ -51,6 +53,10 @@
 //
 //#define SPI_MODULE 2
 #define ENABLE_SPI2
+//#define SCK_PIN                             PB13
+//#define MISO_PIN                            PB14
+//#define MOSI_PIN                            PB15
+//#define SS_PIN                              PB12
 
 //
 // Limit Switches
@@ -72,28 +78,28 @@
 #define X_STEP_PIN                          PE3 //X_STEP
 #define X_DIR_PIN                           PE2 //X_DIR
 #ifndef X_CS_PIN
-  #define X_CS_PIN                          PA10 //FSMC_NWE
+  #define X_CS_PIN                          PA10 //RXD1 /PD5
 #endif
 
 #define Y_ENABLE_PIN                        PE1 //Y_EN
 #define Y_STEP_PIN                          PE0 //Y_STEP
 #define Y_DIR_PIN                           PB9 //Y_DIR
 #ifndef Y_CS_PIN
-  #define Y_CS_PIN                          PA9 //FSMC_NE4
+  #define Y_CS_PIN                          PA9   //TXD1  /PD7
 #endif
 
 #define Z_ENABLE_PIN                        PB8 //Z_EN
 #define Z_STEP_PIN                          PB5 //Z_STEP
 #define Z_DIR_PIN                           PB4 //Z_DIR
 #ifndef Z_CS_PIN
-  #define Z_CS_PIN                          PA8 //FSMC_NOE
+  #define Z_CS_PIN                          PA8   //IO0 /PD4
 #endif
 
 #define E0_ENABLE_PIN                       PB3 //E0_EN
 #define E0_STEP_PIN                         PD6 //E0_STEP
 #define E0_DIR_PIN                          PD3 //E0_DIR
 #ifndef E0_CS_PIN
-  #define E0_CS_PIN                         PC7 //FSMC_D14
+  #define E0_CS_PIN                         PC7   //IO1 /PD9
 #endif
 
 // Motor current PWM pins in orig //
@@ -167,22 +173,13 @@
 #define FAN_PIN                             PB1   // FAN
 
 //
-// Thermocouples
-//
-//#define MAX6675_SS_PIN                    PE5   // TC1 - CS1
-//#define MAX6675_SS_PIN                    PE6   // TC2 - CS2
-
-//
 // Misc. Functions
 //
-#define POWER_LOSS_PIN                      PA1   // PW_DET
+#define POWER_LOSS_PIN                      PA1   // PW_SO  /PW_DET
 #define PS_ON_PIN                           PA3   // PW_OFF
 
-//#define LED_PIN                           PB2
 
-#define WIFI_IO0_PIN                        PA8
-#define WIFI_IO1_PIN       			            PC7
-#define WIFI_RESET_PIN			              	PA5
+//#define LED_PIN                           PB2
 
 #define MT_DET_1_PIN                        PA4 //MT_DET
 #define MT_DET_2_PIN                        PE6 //FALA_CTRL /EXT_IRQ
@@ -192,6 +189,10 @@
   #define FIL_RUNOUT_PIN                    MT_DET_1_PIN
 #endif
 
+//#define WIFI_IO0_PIN                        PA8 //PA10   //USUART1_RX  /PC13 
+//#define WIFI_IO1_PIN       			            PC7 //PA9    //USUART1_TX  /PC7
+//#define WIFI_RESET_PIN			              	PA5 //WIFI_CTRL   /PE9
+
 //
 // SD Card
 //
@@ -200,121 +201,78 @@
 #endif
 
 #define SDIO_SUPPORT
-#define SDIO_CLOCK 4500000                        // 4.5 MHz
-#define SD_DETECT_PIN                       PD12  //SD_CD
-#define ONBOARD_SD_CS_PIN                   PC11  //SD_CS
-#define SD_MOSI                             PD2   //SD_MOSI
-#define SD_MISO                             PC8   //SD_MISO
+#define SDIO_CLOCK                       4500000     // 4.5 MHz
+#define SD_DETECT_PIN                       PD12    //FSCM_A17/USUART3_RX /SD_CD
+#define ONBOARD_SD_CS_PIN                   PC11    //SD_CS
+//#define SD_MOSI                             PD2   //SD_MOSI
+//#define SD_MISO                             PC8   //SD_MISO
+
+//
+// LCD / Controller
+//
+#define BEEPER_PIN                          PC5
 
 /**
  * Note: MKS Robin TFT screens use various TFT controllers.
  * If the screen stays white, disable 'LCD_RESET_PIN'
  * to let the bootloader init the screen.
  */
+  #define XPT2046_X_CALIBRATION            12033
+  #define XPT2046_Y_CALIBRATION            -9047
+  #define XPT2046_X_OFFSET                   -30
+  #define XPT2046_Y_OFFSET                   254
 
-#if ENABLED(TFT_LVGL_UI_SPI)
+#if ENABLED(FSMC_GRAPHICAL_TFT)
 
-  #define SPI_TFT_CS_PIN                    PD7   // NE4 FSMC
-  #define SPI_TFT_SCK_PIN                   PA5   // SPI1_SCK
-  #define SPI_TFT_MISO_PIN                  PA6   // SPI1_MISO
-  #define SPI_TFT_MOSI_PIN                  PA7   // SPI1_MOSI
-  #define SPI_TFT_DC_PIN                    PD10  //FSMC_D15
-  #define SPI_TFT_RST_PIN                   PC6   //FSMC_RST
+  #define FSMC_CS_PIN                       PD7   // NE4
+  #define FSMC_RS_PIN                       PD11  // A0
 
-  #define LCD_BACKLIGHT_PIN                 PD13  //FSMC_LIGHT
+  #define LCD_USE_DMA_FSMC                  // Use DMA transfers to send data to the TFT
+  #define FSMC_DMA_DEV                      DMA2
+  #define FSMC_DMA_CHANNEL                  DMA_CH5
 
-  #define TOUCH_CS_PIN                      PC2   // SPI1_NSS
-  #define TOUCH_SCK_PIN                     PB13  // SPI1_SCK
-  #define TOUCH_MISO_PIN                    PB14  // SPI1_MISO
-  #define TOUCH_MOSI_PIN                    PB15  // SPI1_MOSI
+  #define LCD_RESET_PIN                     PC6   // FSMC_RST
+  #define LCD_BACKLIGHT_PIN                 PD13
 
-  #define BTN_EN1                           PE8   //FSMC_D5
-  #define BTN_EN2                           PE11  //FSMC_D8
-  #define BTN_ENC                           PE13  //FSMC_D10
+  #if NEED_TOUCH_PINS
+    #define TOUCH_CS_PIN                    PC2   // SPI2_NSS
+    #define TOUCH_SCK_PIN                   PB13  // SPI2_SCK
+    #define TOUCH_MISO_PIN                  PB14  // SPI2_MISO
+    #define TOUCH_MOSI_PIN                  PB15  // SPI2_MOSI
+  #endif
 
-#elif ENABLED(TFT_LITTLE_VGL_UI)        // TFT 3.2 FSMC FLSUN
+#elif ENABLED(TFT_320x240) //TFT32/28
 
-  #define FSMC_CS_PIN                       PD7   // NE4 FSMC  /NE4
-  #define FSMC_RS_PIN                       PD11  // FSMC_A0   /A0
+  #define TFT_RESET_PIN                     PC6
+  #define TFT_BACKLIGHT_PIN                 PD13
+
+  #define LCD_USE_DMA_FSMC                        // Use DMA transfers to send data to the TFT
+  #define FSMC_CS_PIN                       PD7
+  #define FSMC_RS_PIN                       PD11
+  #define FSMC_DMA_DEV                      DMA2
+  #define FSMC_DMA_CHANNEL               DMA_CH5
 
   #define TOUCH_CS_PIN                      PC2   // SPI2_NSS
   #define TOUCH_SCK_PIN                     PB13  // SPI2_SCK
   #define TOUCH_MISO_PIN                    PB14  // SPI2_MISO
   #define TOUCH_MOSI_PIN                    PB15  // SPI2_MOSI
 
-  #define LCD_BACKLIGHT_PIN                 PD13  //FSMC_LIGHT
+  #define TFT_DRIVER                     ILI9341
+  #define TFT_BUFFER_SIZE                  14400
+ 
+  // YV for normal screen mounting
+  #define ILI9341_ORIENTATION  ILI9341_MADCTL_MY | ILI9341_MADCTL_MV
+  // XV for 180° rotated screen mounting
+  //#define ILI9341_ORIENTATION  ILI9341_MADCTL_MX | ILI9341_MADCTL_MV
 
+  #define ILI9341_COLOR_RGB
 #endif
 
-#if HAS_SPI_LCD
-
-  #if ENABLED(SPI_GRAPHICAL_TFT)           // Emulated DOGM SPI
-    #define SPI_TFT_CS_PIN                  PD11  // FSMC_A0   /A0
-    #define SPI_TFT_SCK_PIN                 PA5   // SPI1_SCK
-    #define SPI_TFT_MISO_PIN                PA6   // SPI1_MISO
-    #define SPI_TFT_MOSI_PIN                PA7   // SPI1_MOSI
-    #define SPI_TFT_DC_PIN                  PD10  //FSMC_D15
-    #define SPI_TFT_RST_PIN                 PC6   //FSMC_RST   
-
-    #define LCD_BACKLIGHT_PIN               PD13  // SPI2_SCK
-
-    #define LCD_READ_ID                     0xD3
-    #define LCD_USE_DMA_SPI
-
-    #define TOUCH_BUTTONS_HW_SPI
-    #define TOUCH_BUTTONS_HW_SPI_DEVICE     1
-
-    #define TOUCH_SCREEN
-    #if NEED_TOUCH_PINS
-      #define TOUCH_CS_PIN                  PC2    // SPI1_NSS  CS_XPT2046
-      #define TOUCH_SCK_PIN                 PB13   // SPI1_SCK  SCK_XPT2046
-      #define TOUCH_MISO_PIN                PB14   // SPI1_MISO SDO_XPT2046
-      #define TOUCH_MOSI_PIN                PB15   // SPI1_MOSI SDI_XPT2046
-
-      #ifndef XPT2046_X_CALIBRATION
-        #define XPT2046_X_CALIBRATION      12149
-      #endif
-      #ifndef XPT2046_Y_CALIBRATION
-        #define XPT2046_Y_CALIBRATION       -8746
-      #endif
-      #ifndef XPT2046_X_OFFSET
-        #define XPT2046_X_OFFSET             -35
-      #endif
-      #ifndef XPT2046_Y_OFFSET
-        #define XPT2046_Y_OFFSET               256
-      #endif
-    #endif
-
-    #ifndef FSMC_UPSCALE
-      #define FSMC_UPSCALE                     3
-    #endif
-    #ifndef LCD_FULL_PIXEL_WIDTH
-      #define LCD_FULL_PIXEL_WIDTH           320
-    #endif
-    #ifndef LCD_PIXEL_OFFSET_X
-      #define LCD_PIXEL_OFFSET_X              48
-    #endif
-    #ifndef LCD_FULL_PIXEL_HEIGHT
-      #define LCD_FULL_PIXEL_HEIGHT          240
-    #endif
-    #ifndef LCD_PIXEL_OFFSET_Y
-      #define LCD_PIXEL_OFFSET_Y              32
-    #endif
-
-    #define BTN_ENC                         PE13  //FSMC_D10
-    #define BTN_EN1                         PE8   //FSMC_D5
-    #define BTN_EN2                         PE11  //FSMC_D8
-
-    #define LCD_PINS_ENABLE                 PD13
-    #define LCD_PINS_RS                     PC6   //FSMC_RST
-
-#endif // HAS_SPI_LCD
-
-#define SPI_FLASH
-#if ENABLED(SPI_FLASH)
-  #define W25QXX_CS_PIN                     PB12
-  #define W25QXX_MOSI_PIN                   PB15
-  #define W25QXX_MISO_PIN                   PB14
-  #define W25QXX_SCK_PIN                    PB13
+#define HAS_SPI_FLASH                  1
+#define SPI_FLASH_SIZE                 0x1000000  // 16MB
+#if HAS_SPI_FLASH
+  #define W25QXX_CS_PIN                PB12  // Flash chip-select
+  #define W25QXX_MOSI_PIN              PB15
+  #define W25QXX_MISO_PIN              PB14
+  #define W25QXX_SCK_PIN               PB13
 #endif
-
